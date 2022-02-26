@@ -1,0 +1,11 @@
+query communities {
+  communities {
+    edges {
+      node {
+        id
+        name
+        slug
+      }
+    }
+  }
+}

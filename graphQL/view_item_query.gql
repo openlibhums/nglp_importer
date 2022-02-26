@@ -1,0 +1,105 @@
+query {{
+  item(slug: "pVv8Y9RsNPEhXm9Sp1yJsZ0pvVLQZv") {{
+	abstract: schemaProperty(fullPath: "abstract") {{
+	    ...SchemaPropertyFragment
+    }}
+    publisher: schemaProperty(fullPath: "publisher") {{
+      	...SchemaPropertyFragment
+    }}
+    cc_license: schemaProperty(fullPath: "cc_license") {{
+      	...SchemaPropertyFragment
+    }}
+    access_type: schemaProperty(fullPath: "access") {{
+      	...SchemaPropertyFragment
+    }}
+    advisor: schemaProperty(fullPath: "advisor") {{
+      	...SchemaPropertyFragment
+    }}
+    grantor: schemaProperty(fullPath: "degree.grantor") {{
+      	...SchemaPropertyFragment
+    }}
+    level: schemaProperty(fullPath: "degree.level") {{
+      	...SchemaPropertyFragment
+    }}
+    date: schemaProperty(fullPath: "graduation_date") {{
+      	...SchemaPropertyFragment
+    }}
+  }}
+}}
+
+# Reusable fragment that describes each available schema property type
+fragment SchemaPropertyFragment on AnyScalarProperty {{
+  ... on ScalarProperty {{
+    fullPath
+    path
+    type
+    label
+  }}
+  ... on ContributorsProperty {{
+    contributors {{
+      __typename
+      ... on Sluggable {{
+        slug
+      }}
+      ... on OrganizationContributor {{
+        legalName
+      }}
+      ... on PersonContributor {{
+        givenName
+        familyName
+      }}
+    }}
+  }}
+  ...on FullTextProperty {{
+    fullPath
+    fullText {{
+      content
+      kind
+      lang
+    }}
+  }}
+  ... on StringProperty {{
+    default
+    content
+  }}
+  ... on EmailProperty {{
+    defaultAddress
+    address
+  }}
+  ... on BooleanProperty {{
+    checkedByDefault
+    checked
+  }}
+  ... on DateProperty {{
+    date
+  }}
+  ... on MarkdownProperty {{
+    default
+    content
+  }}
+  ... on MultiselectProperty {{
+    options {{
+      label
+      value
+    }}
+    defaultSelections
+    selections
+  }}
+  ... on SelectProperty {{
+    options {{
+      label
+      value
+    }}
+    defaultSelection
+    selection
+  }}
+  ... on VariableDateProperty {{
+    dateWithPrecision {{
+      precision
+      value
+    }}
+  }}
+  ... on TagsProperty {{
+    tags
+  }}
+}}

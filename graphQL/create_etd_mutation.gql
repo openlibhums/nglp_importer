@@ -1,0 +1,29 @@
+mutation  {{
+          createItem(input: {{
+        parentId: "{0}",
+        title: "{1}",
+    schemaVersionSlug: "nglp:dissertation:1.0.0"
+        visibility: VISIBLE
+    }}) {{
+    item {{
+      title
+      id
+      slug
+    }}
+    ...MutationForm_mutationErrors
+  }}
+}}
+
+fragment MutationForm_mutationErrors on StandardMutationPayload {{
+  attributeErrors {{
+    path
+    type
+    messages
+  }}
+  globalErrors {{
+    message
+  }}
+  errors {{
+    message
+  }}
+}}

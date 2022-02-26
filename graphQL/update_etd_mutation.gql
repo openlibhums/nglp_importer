@@ -1,0 +1,26 @@
+mutation {{
+  applySchemaProperties(input: {{
+      entityId: "{0}",
+      propertyValues: {{
+        abstract: "{1}",
+        publisher: "{5}",
+        advisor: "{4}",
+        graduation_date: "{3}",
+        access: "{6}",
+        degree : {{
+          level: "{2}",
+            grantor: "{5}"
+        }}
+      }}
+  }})
+
+    {{
+        item {{
+            id
+      }}
+        schemaErrors {{
+          path
+          message
+        }}
+    }}
+}}

@@ -1,0 +1,27 @@
+query {{
+  result: contributorLookup(by: EMAIL, value: "{0}") {{
+    ... ContributorLookupFragment
+  }}
+}}
+
+fragment ContributorLookupFragment on AnyContributor {{
+  __typename
+
+  ... on OrganizationContributor {{
+    id
+
+    ... ContributorFragment
+  }}
+
+  ... on PersonContributor {{
+    id
+
+    ... ContributorFragment
+  }}
+}}
+
+fragment ContributorFragment on Contributor {{
+  name
+  email
+  orcid
+}}

@@ -1,0 +1,27 @@
+mutation  {{
+    createCollection(input: {{
+        parentId: "{0}",
+        title: "{1}",
+        visibility: VISIBLE
+    }}) {{
+    collection {{
+      title
+      id
+    }}
+    ...MutationForm_mutationErrors
+  }}
+}}
+
+fragment MutationForm_mutationErrors on StandardMutationPayload {{
+  attributeErrors {{
+    path
+    type
+    messages
+  }}
+  globalErrors {{
+    message
+  }}
+  errors {{
+    message
+  }}
+}}

@@ -1,0 +1,13 @@
+query community {{
+  community(slug:"{0}") {{
+    id
+  collections {{edges {{
+    node {{
+      id
+      slug
+      title
+    }}
+    }}
+  }}
+  }}
+}}

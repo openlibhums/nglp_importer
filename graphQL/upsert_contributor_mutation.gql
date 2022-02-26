@@ -1,0 +1,14 @@
+mutation {{
+  upsertContribution(input: {{
+		contributableId: "{0}",
+        contributorId: "{1}",
+		role: "author"
+  }}) {{
+		contribution {{
+			...on ItemContribution {{
+				id
+				slug
+			}}
+		}}
+  }}
+}}

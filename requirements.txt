@@ -1,0 +1,8 @@
+click
+rich
+requests
+xmltodict
+django
+python-keycloak
+tuspy
+dynaconf

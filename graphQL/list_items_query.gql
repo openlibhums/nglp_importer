@@ -1,0 +1,26 @@
+query listitems {{
+  collection(slug: "{0}") {{
+    descendants(scope: ITEM) {{
+      edges {{
+        node {{
+          descendant {{
+            __typename
+
+            ... on Item {{
+              slug
+              title
+              hierarchicalDepth
+              id
+
+              items {{
+                pageInfo {{
+                  totalCount
+                }}
+              }}
+            }}
+          }}
+        }}
+      }}
+    }}
+  }}
+}}

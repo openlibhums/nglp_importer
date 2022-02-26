@@ -1,0 +1,33 @@
+type Field { name: String type: String value: String }
+
+type Fields { field: [Field ] }
+
+type Disciplines { discipline: [String ] }
+
+type Keywords { keyword: [String ] }
+
+type Author { email: String
+  institution: String
+  lname: String
+  fname: String
+  mname: String }
+
+type Authors { author: Author }
+
+type ETD { title: String
+  publicationdate: String
+  abstract: String
+  coverpageurl: String
+  fulltexturl: String
+  label: String
+  documenttype: String
+  type: String
+  articleid: String
+  submissiondate: String
+  publicationtitle: String
+  contextkey: String
+  submissionpath: String
+  fields: Fields
+  disciplines: Disciplines
+  keywords: Keywords
+  authors: Authors }

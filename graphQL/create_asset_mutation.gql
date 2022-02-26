@@ -1,0 +1,25 @@
+mutation {{
+  createAsset(input: {{
+		entityId: "{0}",
+		attachment: {{
+			id: "{1}",
+			storage: CACHE # Files recently uploaded should be in the CACHE store
+			metadata: {{
+            mimeType: "application/pdf"
+        }}
+		}}
+		altText: "PDF File",
+		name: "PDF"
+  }}) {{
+		asset {{
+			# This is a union type on AssetAudio, AssetDocument, AssetImage, AssetPDF,
+			# AssetUnknown, and AssetVideo. Each type can have specific properties.
+			...on AssetPDF {{
+				downloadUrl
+				fileSize
+				name
+				kind
+			}}
+		}}
+  }}
+}}

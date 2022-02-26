@@ -1,0 +1,14 @@
+mutation {{
+  createPersonContributor(input: {{
+	  givenName: "{0}",
+	  familyName: "{1}",
+	  affiliation: "{2}"
+	  email: "{3}"
+	}}) {{
+	  contributor {{
+	    id
+	    givenName
+	    slug
+	  }}
+	}}
+}}

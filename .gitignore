@@ -1,0 +1,5 @@
+
+# Ignore dynaconf secret files
+.secrets.*
+.idea
+db.sqlite3
