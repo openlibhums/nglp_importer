@@ -26,4 +26,15 @@ Defaults in secrets.toml.default should be updated and then renamed to .secrets.
 
 To create the database, run manage.py migrate.
 
-&copy; Birkbeck, University of London and Martin Paul Eve, 2022
+## Requirements notes
+This project uses:
+
+* [Click](https://click.palletsprojects.com/en/8.0.x/) for CLI argument parsing
+* [Dynaconf](https://www.dynaconf.com/) for configuration and secret passing
+* [Django](https://www.djangoproject.com/) for the ORM and caching system
+* [Requests](https://docs.python-requests.org/en/latest/) for remote fetch
+* [Rich](https://github.com/Textualize/rich) for beautiful output
+* [tuspy](https://tus-py-client.readthedocs.io/en/latest/) for TUS uploads
+* [xmltodict](https://pypi.org/project/xmltodict/) for parsing XML into dictionaries
+
+&copy; [Birkbeck, University of London](bbk.ac.uk/) and [Martin Paul Eve](https://eve.gd), 2022
