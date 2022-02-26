@@ -37,4 +37,4 @@ This project uses:
 * [tuspy](https://tus-py-client.readthedocs.io/en/latest/) for TUS uploads
 * [xmltodict](https://pypi.org/project/xmltodict/) for parsing XML into dictionaries
 
-&copy; [Birkbeck, University of London](bbk.ac.uk/) and [Martin Paul Eve](https://eve.gd), 2022
+&copy; [Birkbeck, University of London](https://bbk.ac.uk/) and [Martin Paul Eve](https://eve.gd), 2022
