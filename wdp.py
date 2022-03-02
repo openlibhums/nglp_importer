@@ -312,6 +312,21 @@ class WebDeliveryPlatform:
         for key in document_fields.keys():
             globals()[key] = ''
 
+        # clear dynamic regex fields
+        pop_list = []
+
+        for key_name in globals().keys():
+            for field_match in field_list:
+                match = re.match(field_match, key_name)
+                if match:
+                    pop_list.append(match.group(0))
+
+        for popper in pop_list:
+            globals().pop(popper)
+            self.log.info('[green]Removed dynamic value:[/] '
+                          '{}'.format([popper]),
+                          extra={'markup': True})
+
         # parse document-level data
         for field in document_fields.keys():
             if field in document_hooks:
