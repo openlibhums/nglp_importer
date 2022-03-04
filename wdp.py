@@ -527,12 +527,21 @@ class WebDeliveryPlatform:
             institution = 'null'
 
         if not user:
-            query = utils.graph_ql_loader('create_contributor_mutation',
-                                          log=self.log,
-                                          table_log=self.table_log)
+            if 'email' in author:
+                query = utils.graph_ql_loader('create_contributor_mutation',
+                                              log=self.log,
+                                              table_log=self.table_log)
 
-            query = query.format(author['fname'], author['lname'],
-                                 institution, author['email'])
+                query = query.format(author['fname'], author['lname'],
+                                     institution, author['email'])
+            else:
+                query = utils.graph_ql_loader('create_contributor_no_email_'
+                                              'mutation',
+                                              log=self.log,
+                                              table_log=self.table_log)
+
+                query = query.format(author['fname'], author['lname'],
+                                     institution)
         else:
             query = utils.graph_ql_loader('update_contributor_mutation',
                                           log=self.log,
@@ -725,9 +734,20 @@ def create_etd(username, password, community, collection, server, thesis=None,
         if table_log is not None:
             table_log['File upload/download (set to skipped)'] = False
 
+    has_email = True
+
     # attach creators to the document
     # first see if we have an email
-    user = wdp.get_user(email=thesis['authors']['author']['email'])
+    if 'email' in thesis['authors']['author']:
+        user = wdp.get_user(email=thesis['authors']['author']['email'])
+    else:
+        user = None
+        has_email = False
+        log.error(
+            '[red]Extracting author email from thesis[/]',
+            extra={'markup': True})
+        if table_log is not None:
+            table_log['Extract author email'] = False
 
     if user:
         log.info('[green]Found existing user[/]',
@@ -746,18 +766,22 @@ def create_etd(username, password, community, collection, server, thesis=None,
         else:
             author_result = wdp.create_or_update_user(thesis=thesis, user=user)
 
-        # affiliate the author with the contribution
-        user = wdp.get_user(email=thesis['authors']['author']['email'])
+        if has_email:
+            # affiliate the author with the contribution
+            user = wdp.get_user(email=thesis['authors']['author']['email'])
 
-        if not user:
-            # uh oh
-            log.error(
-                '[red]Creating/updating user[/]',
-                extra={'markup': True})
-            if table_log is not None:
-                table_log['Create/update user'] = False
+            if not user:
+                # uh oh
+                log.error(
+                    '[red]Creating/updating user[/]',
+                    extra={'markup': True})
+                if table_log is not None:
+                    table_log['Create/update user'] = False
 
-            return
+                return
+        else:
+            user = \
+                author_result['data']['createPersonContributor']['contributor']
 
         wdp.affiliate_author(contribution_id=object_id, author_id=user['id'])
     else:
