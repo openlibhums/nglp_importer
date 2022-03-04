@@ -462,6 +462,9 @@ class WebDeliveryPlatform:
                                       log=self.log,
                                       table_log=self.table_log)
 
+        if 'abstract' not in thesis:
+            thesis['abstract'] = ''
+
         query = query.format(etd_id, thesis['abstract'],
                              global_list['degree_name'],
                              global_list['degree_year'],
