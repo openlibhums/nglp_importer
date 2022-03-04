@@ -501,6 +501,8 @@ class WebDeliveryPlatform:
             query = utils.graph_ql_loader('get_author_by_orcid', log=self.log,
                                           table_log=self.table_log)
             query = query.format(orcid)
+        else:
+            return None
 
         result = self._send_query(query=query)
 
