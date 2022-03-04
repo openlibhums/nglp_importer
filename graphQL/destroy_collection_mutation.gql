@@ -1,0 +1,22 @@
+mutation  {{
+  destroyCollection(input: {{collectionId:"{0}"}})
+
+{{
+  destroyed
+  ...MutationForm_mutationErrors
+}}
+}}
+
+fragment MutationForm_mutationErrors on StandardMutationPayload {{
+  attributeErrors {{
+    path
+    type
+    messages
+  }}
+  globalErrors {{
+    message
+  }}
+  errors {{
+    message
+  }}
+}}

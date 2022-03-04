@@ -364,4 +364,5 @@ if __name__ == '__main__':
     cli.add_command(wdp.nuke_collection)
     cli.add_command(wdp.get_upload_token)
     cli.add_command(wdp.get_user)
+    cli.add_command(wdp.delete_collection)
     cli()

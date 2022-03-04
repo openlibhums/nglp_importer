@@ -238,6 +238,16 @@ class WebDeliveryPlatform:
 
         return self._send_query(query=query)
 
+    def destroy_collection(self, collection_id):
+        """
+        Destroys a collection. Warning: this function doesn't protect the user.
+        """
+        query = utils.graph_ql_loader(schema='destroy_collection_mutation',
+                                      log=self.log, table_log=self.table_log)
+        query = query.format(collection_id)
+
+        return self._send_query(query=query)
+
     def download_file(self, url, cache, cache_dir):
         local_filename = os.path.join(Path.home(), 'down.pdf')
 
@@ -281,6 +291,12 @@ class WebDeliveryPlatform:
         field_mappings['degree_name'] = ['degree_name', 'level']
         field_mappings['award_month'] = 'award_month'
         field_mappings['degree_year'] = ['degree_year', 'publication_date']
+
+
+        # fields listed here will not be considered required variables
+        # this is a way of marking field mappings as only for intermediate
+        # operations, like concat
+        field_pops = ['award_month']
 
         # a list of function hooks to parse values
         function_hooks = OrderedDict()
@@ -403,7 +419,8 @@ class WebDeliveryPlatform:
         for key in field_mappings.keys():
             if type(field_mappings[key]) is str:
                 if field_mappings[key] not in required_variables:
-                    required_variables.append(field_mappings[key])
+                    if key not in field_pops:
+                        required_variables.append(field_mappings[key])
                 if key in global_list:
                     globals()[field_mappings[key]] = globals()[key]
             elif type(field_mappings[key]) is list:
@@ -858,6 +875,66 @@ def delete_item(username, password, community, server, item):
               default='https://auth.staging.nglp.org/auth/')
 @click.option('--collection',
               help='The collection name',
+              prompt='Collection name to delete:')
+def delete_collection(username, password, community, server, collection):
+    """
+    Destroy a collection on the WDP [WARNING]
+    """
+    username = username if username else settings.username
+    password = password if password else settings.password
+
+    log = logging.getLogger("rich")
+    table_log = OrderedDict()
+
+    wdp = WebDeliveryPlatform(username=username, password=password,
+                              auth_endpoint=server, table_log=table_log,
+                              community=community)
+
+    collection_obj = wdp.get_collection(collection_name=collection)
+
+    if collection_obj:
+        result = wdp.destroy_collection(collection_obj['id'])
+
+        if result and 'data' in result and 'destroyCollection' in result['data']:
+            if result['data']['destroyCollection']['destroyed']:
+                log.info('[green]Destroyed collection[/]'.format(
+                    extra={'markup': True}))
+
+                table_log['Destroyed collection'] = True
+            else:
+                log.error(
+                    '[red]Unable to destroy collection[/]',
+                    extra={'markup': True})
+                table_log['Destroyed collection'] = False
+        else:
+            log.error(
+                '[red]Unable to destroy collection[/]',
+                extra={'markup': True})
+            table_log['Destroyed collection'] = False
+    else:
+        log.error(
+            '[red]Unable to destroy collection[/]',
+            extra={'markup': True})
+        table_log['Destroyed collection'] = False
+
+
+    output_table_log(table_log)
+
+@click.command()
+@click.option('--username',
+              default=None,
+              help='The username to login with')
+@click.option('--password',
+              default=None,
+              help='The password to login with')
+@click.option('--community',
+              prompt='Community name',
+              help='The community name')
+@click.option('--server',
+              help='The keycloak server',
+              default='https://auth.staging.nglp.org/auth/')
+@click.option('--collection',
+              help='The collection name',
               prompt='Collection name')
 def nuke_collection(username, password, community, collection, server):
     """
@@ -1023,15 +1100,16 @@ def create_collection(collection, username, password, community, server):
                               table_log=table_log)
     result = wdp.create_collection(collection)
 
-    if result and 'data' in result and 'collection' in result['data'] \
-            and 'id' in result['data']['collection']:
+    if result and 'data' in result and 'createCollection' in result['data'] \
+            and 'id' in result['data']['createCollection']['collection']:
         log.info(
             '[green]Created collection:[/] {}'.format(
-                result['data']['collection']['id']),
+                result['data']['createCollection']['collection']['id']),
             extra={'markup': True})
         if table_log is not None:
             table_log['Created collection'] = True
     else:
+        print(result)
         log.error(
             '[red]Unable to create collection[/]',
             extra={'markup': True})
