@@ -8,6 +8,7 @@ A command-line system for importing BePress artifacts into the [NGLP](https://gi
 
     Commands:
       create-collection   Create a new collection on the WDP
+      delete-collection   Destroy a collection on the WDP [WARNING]
       delete-item         Destroy an item on the WDP [WARNING]
       get-keycloak-token  Get an auth token from a keycloak server
       get-upload-token    Retrieve an upload token from the WDP
