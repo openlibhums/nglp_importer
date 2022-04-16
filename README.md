@@ -29,6 +29,8 @@ Defaults in secrets.toml.default should be updated and then renamed to .secrets.
 
 To create the database, run manage.py migrate.
 
+In Keycloak, you _must_ reset the password for every user on every realm and set the value to a non-temporary password. If you get "bad credentials" when trying to login, this is likely the problem.
+
 ## Requirements notes
 This project uses:
 
