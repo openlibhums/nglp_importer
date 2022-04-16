@@ -43,7 +43,9 @@ def _get_keycloak_token(username, password, server, auth_file, realm_name):
     log = logging.getLogger("rich")
     tokens = {}
 
-    auth_file = auth_file + realm_name
+    if not auth_file.endswith(realm_name):
+        auth_file = auth_file + realm_name
+
     # parse the existing keyfile into a dictionary
     my_file = Path(auth_file)
 
@@ -102,7 +104,8 @@ def get_token(username, password, server,
     log = logging.getLogger("rich")
     tokens = {}
 
-    auth_file = auth_file + realm_name
+    if not auth_file.endswith(realm_name):
+        auth_file = auth_file + realm_name
 
     # parse the existing keyfile into a dictionary
     my_file = Path(auth_file)
