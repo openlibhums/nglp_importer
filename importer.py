@@ -69,7 +69,7 @@ def cli():
               help='The collection name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--cache/--no-cache',
               help='Whether to cache or not',
               default=True)
@@ -120,7 +120,7 @@ def import_csv(csv_filename, cache_dir, out_file, username, password,
               help='The collection name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--cache/--no-cache',
               help='Whether to cache or not',
               default=True)

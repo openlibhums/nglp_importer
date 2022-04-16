@@ -859,7 +859,7 @@ def get_upload_token(username, password, community, server, realm_name):
               help='The community name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--item',
               help='The item ID',
               prompt='Item ID to delete:')
@@ -913,7 +913,7 @@ def delete_item(username, password, community, server, item, realm_name):
               help='The community name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name to delete:')
@@ -976,7 +976,7 @@ def delete_collection(username, password, community, server, collection):
               help='The community name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name')
@@ -1031,7 +1031,7 @@ def nuke_collection(username, password, community, collection, server):
               help='The community name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name')
@@ -1085,7 +1085,7 @@ def list_items(username, password, community, collection, server):
               help='The community name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--realm_name',
               help='The realm',
               default='arizona')
@@ -1137,7 +1137,7 @@ def list_collections(username, password, community, server, realm_name):
               help='The community name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--realm_name',
               help='The realm',
               default='arizona')
@@ -1233,7 +1233,7 @@ def test_authorisation(username, password, server, realm_name):
               help='The password to login with')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--email',
               help='The email address to lookup')
 @click.option('--orcid',

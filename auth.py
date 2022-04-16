@@ -20,7 +20,7 @@ from config import settings
               help='The password to login with')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
+              default='https://auth.nglp.org/auth/')
 @click.option('--auth_file',
               help='The location in which to store the auth file',
               default=os.path.join(Path.home(), '.phonehomeauth'))
