@@ -920,7 +920,8 @@ def delete_item(username, password, community, server, item, realm_name):
 @click.option('--realm-name',
               help='The realm',
               default='arizona')
-def delete_collection(username, password, community, server, collection):
+def delete_collection(username, password, community, server, collection,
+                      realm_name):
     """
     Destroy a collection on the WDP [WARNING]
     """
@@ -983,7 +984,8 @@ def delete_collection(username, password, community, server, collection):
 @click.option('--realm-name',
               help='The realm',
               default='arizona')
-def nuke_collection(username, password, community, collection, server):
+def nuke_collection(username, password, community, collection, server,
+                    realm_name):
     """
     Deletes all items in a collection [WARNING]
     """
@@ -1038,7 +1040,7 @@ def nuke_collection(username, password, community, collection, server):
 @click.option('--realm-name',
               help='The realm',
               default='arizona')
-def list_items(username, password, community, collection, server):
+def list_items(username, password, community, collection, server, realm_name):
     """
     List available community collection items on the WDP
     """
