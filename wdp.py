@@ -1160,6 +1160,7 @@ def create_collection(collection, username, password, community, server,
     result = wdp.create_collection(collection)
 
     if result and 'data' in result and 'createCollection' in result['data'] \
+            and result['data']['createCollection'] \
             and 'id' in result['data']['createCollection']['collection']:
         log.info(
             '[green]Created collection:[/] {}'.format(
@@ -1168,7 +1169,6 @@ def create_collection(collection, username, password, community, server,
         if table_log is not None:
             table_log['Created collection'] = True
     else:
-        print(result)
         log.error(
             '[red]Unable to create collection[/]',
             extra={'markup': True})
