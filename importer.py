@@ -49,10 +49,10 @@ def cli():
 @click.option('--csv-filename',
               prompt='CSV file',
               help='The CSV file to read')
-@click.option('--cache_dir',
+@click.option('--cache-dir',
               help='A cache directory',
               default=os.path.join(Path.home(), 'phcache'))
-@click.option('--out_file',
+@click.option('--out-file',
               help='An output file',
               default=os.path.join(Path.home(), 'out.json'))
 @click.option('--username',
@@ -100,10 +100,10 @@ def import_csv(csv_filename, cache_dir, out_file, username, password,
 @click.option('--url',
               prompt='URL',
               help='The URL to fetch')
-@click.option('--cache_dir',
+@click.option('--cache-dir',
               help='A cache directory',
               default=os.path.join(Path.home(), 'phcache'))
-@click.option('--out_file',
+@click.option('--out-file',
               help='An output file',
               default=os.path.join(Path.home(), 'out.json'))
 @click.option('--username',

@@ -21,10 +21,10 @@ from config import settings
 @click.option('--server',
               help='The keycloak server',
               default='https://auth.nglp.org/auth/')
-@click.option('--auth_file',
+@click.option('--auth-file',
               help='The location in which to store the auth file',
               default=os.path.join(Path.home(), '.phonehomeauth'))
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm name',
               default="arizona-nglp")
 def get_keycloak_token(username, password, server, auth_file, realm_name):

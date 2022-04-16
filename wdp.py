@@ -815,7 +815,7 @@ def create_etd(username, password, realm_name, community, collection, server, th
 @click.option('--server',
               help='The keycloak server',
               default='https://auth.nglp.org/auth/')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def get_upload_token(username, password, community, server, realm_name):
@@ -863,7 +863,7 @@ def get_upload_token(username, password, community, server, realm_name):
 @click.option('--item',
               help='The item ID',
               prompt='Item ID to delete:')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def delete_item(username, password, community, server, item, realm_name):
@@ -917,7 +917,7 @@ def delete_item(username, password, community, server, item, realm_name):
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name to delete:')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def delete_collection(username, password, community, server, collection):
@@ -961,8 +961,8 @@ def delete_collection(username, password, community, server, collection):
             extra={'markup': True})
         table_log['Destroyed collection'] = False
 
-
     output_table_log(table_log)
+
 
 @click.command()
 @click.option('--username',
@@ -980,7 +980,7 @@ def delete_collection(username, password, community, server, collection):
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def nuke_collection(username, password, community, collection, server):
@@ -1035,7 +1035,7 @@ def nuke_collection(username, password, community, collection, server):
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def list_items(username, password, community, collection, server):
@@ -1086,7 +1086,7 @@ def list_items(username, password, community, collection, server):
 @click.option('--server',
               help='The keycloak server',
               default='https://auth.nglp.org/auth/')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def list_collections(username, password, community, server, realm_name):
@@ -1138,7 +1138,7 @@ def list_collections(username, password, community, server, realm_name):
 @click.option('--server',
               help='The keycloak server',
               default='https://auth.nglp.org/auth/')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def create_collection(collection, username, password, community, server,
@@ -1187,7 +1187,7 @@ def create_collection(collection, username, password, community, server,
 @click.option('--server',
               help='The keycloak server',
               default='https://auth.nglp.org/auth/')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def test_authorisation(username, password, server, realm_name):
@@ -1238,7 +1238,7 @@ def test_authorisation(username, password, server, realm_name):
               help='The email address to lookup')
 @click.option('--orcid',
               help='The ORCID to lookup')
-@click.option('--realm_name',
+@click.option('--realm-name',
               help='The realm',
               default='arizona')
 def get_user(username, password, server, email=None, orcid=None,
