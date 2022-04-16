@@ -8,8 +8,8 @@ A command-line system for importing BePress artifacts into the [NGLP](https://gi
 
     Commands:
       create-collection   Create a new collection on the WDP
-      delete-collection   Destroy a collection on the WDP [WARNING]
-      delete-item         Destroy an item on the WDP [WARNING]
+      delete-collection   [WARNING] Destroy a collection on the WDP
+      delete-item         [WARNING] Destroy an item on the WDP
       get-keycloak-token  Get an auth token from a keycloak server
       get-upload-token    Retrieve an upload token from the WDP
       get-user            Lookup a user by email or ORCID
@@ -17,8 +17,10 @@ A command-line system for importing BePress artifacts into the [NGLP](https://gi
       import-single       Import a single item
       list-collections    List available community collections on the WDP
       list-items          List available community collection items on the WDP
-      nuke-collection     Deletes all items in a collection [WARNING]
+      nuke-collection     [WARNING] Deletes all items in a collection
       test-authorisation  Test that authorisation is working on the WDP
+
+Items marked [WARNING] are destructive. The client will not ask for confirmation before destructive operations.
 
 ## Configuration and Setup
 Requirements should be installed using pip3 -r requirements.txt

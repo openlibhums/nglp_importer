@@ -24,7 +24,10 @@ from config import settings
 @click.option('--auth_file',
               help='The location in which to store the auth file',
               default=os.path.join(Path.home(), '.phonehomeauth'))
-def get_keycloak_token(username, password, server, auth_file):
+@click.option('--realm_name',
+              help='The realm name',
+              default="arizona-nglp")
+def get_keycloak_token(username, password, server, auth_file, realm_name):
     """
     Get an auth token from a keycloak server
     """
@@ -32,13 +35,15 @@ def get_keycloak_token(username, password, server, auth_file):
     password = password if password else settings.password
 
     return _get_keycloak_token(username=username, password=password,
-                               server=server, auth_file=auth_file)
+                               server=server, auth_file=auth_file,
+                               realm_name=realm_name)
 
 
-def _get_keycloak_token(username, password, server, auth_file):
+def _get_keycloak_token(username, password, server, auth_file, realm_name):
     log = logging.getLogger("rich")
     tokens = {}
 
+    auth_file = auth_file + realm_name
     # parse the existing keyfile into a dictionary
     my_file = Path(auth_file)
 
@@ -55,9 +60,9 @@ def _get_keycloak_token(username, password, server, auth_file):
     try:
         keycloak_openid = KeycloakOpenID(
             server_url=server,
-            client_id="janeway-pilot-importer",
-            realm_name="NGLP",
-            client_secret_key=settings.client_secret_key)
+            client_id="WDP-Password",
+            realm_name=realm_name,
+            client_secret_key=settings.client_secret_key[realm_name])
 
         # Get WellKnow
         config_well_know = keycloak_openid.well_know()
@@ -92,9 +97,12 @@ def _get_keycloak_token(username, password, server, auth_file):
 
 def get_token(username, password, server,
               auth_file=os.path.join(Path.home(), '.phonehomeauth'),
-              refresh=False):
+              refresh=False,
+              realm_name=None):
     log = logging.getLogger("rich")
     tokens = {}
+
+    auth_file = auth_file + realm_name
 
     # parse the existing keyfile into a dictionary
     my_file = Path(auth_file)
@@ -113,4 +121,5 @@ def get_token(username, password, server,
         return tokens[server]
     else:
         return _get_keycloak_token(username=username, password=password,
-                                   auth_file=auth_file, server=server)
+                                   auth_file=auth_file, server=server,
+                                   realm_name=realm_name)

@@ -53,10 +53,11 @@ class GraphQLClientRequests:
 
 
 class WebDeliveryPlatform:
-    base_endpoint = 'https://api.staging.nglp.org/'
+    base_endpoint = 'https://api.{0}.nglp.org/'
     endpoint = base_endpoint + 'graphql'
     files_endpoint = base_endpoint + 'files/'
-    auth_endpoint = 'https://auth.staging.nglp.org/auth/'
+    auth_endpoint = 'https://auth.nglp.org/auth/'
+    realm_suffix = '-nglp'
     community = None
     community_name = ''
     log = logging.getLogger("rich")
@@ -66,18 +67,22 @@ class WebDeliveryPlatform:
     slug = None
 
     def __init__(self, username, password, endpoint=None, community=None,
-                 auth_endpoint=None, table_log=None):
+                 auth_endpoint=None, table_log=None, realm_name=None):
+        self.base_endpoint = self.base_endpoint.format(realm_name)
         self.endpoint = endpoint if endpoint else self.endpoint
+        self.endpoint = self.endpoint.format(realm_name)
         self.community_name = community
         self.auth_endpoint = auth_endpoint if auth_endpoint \
             else self.auth_endpoint
         self.table_log = table_log if table_log is not None else self.table_log
         self.username = username
         self.password = password
+        self.realm_name = realm_name + self.realm_suffix
 
     def _send_query(self, query, refresh_token=False):
         # retrieve an access token
-        token = self._get_access_token(refresh=refresh_token)
+        token = self._get_access_token(refresh=refresh_token,
+                                       realm_name=self.realm_name)
 
         # no token found
         if not token:
@@ -630,9 +635,10 @@ class WebDeliveryPlatform:
         except:
             return None
 
-    def _get_access_token(self, refresh=False):
+    def _get_access_token(self, realm_name, refresh=False):
         token = auth.get_token(username=self.username, password=self.password,
-                               server=self.auth_endpoint, refresh=refresh)
+                               server=self.auth_endpoint, refresh=refresh,
+                               realm_name=realm_name)
 
         if token:
             return token['access_token']
@@ -640,7 +646,7 @@ class WebDeliveryPlatform:
             return None
 
 
-def create_etd(username, password, community, collection, server, thesis=None,
+def create_etd(username, password, realm_name, community, collection, server, thesis=None,
                table_log=None, commit=True, cache_dir=None, files=True):
     """
     Create an electronic thesis/dissertation on the WDP
@@ -659,7 +665,7 @@ def create_etd(username, password, community, collection, server, thesis=None,
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, table_log=table_log,
-                              community=community)
+                              community=community, realm_name=realm_name)
 
     if commit:
         result = wdp.create_etd(collection_name=collection,
@@ -808,8 +814,11 @@ def create_etd(username, password, community, collection, server, thesis=None,
               help='The community name')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
-def get_upload_token(username, password, community, server):
+              default='https://auth.nglp.org/auth/')
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
+def get_upload_token(username, password, community, server, realm_name):
     """
     Retrieve an upload token from the WDP
     """
@@ -821,7 +830,7 @@ def get_upload_token(username, password, community, server):
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, table_log=table_log,
-                              community=community)
+                              community=community, realm_name=realm_name)
     result = wdp.get_upload_token()
 
     if result:
@@ -854,7 +863,10 @@ def get_upload_token(username, password, community, server):
 @click.option('--item',
               help='The item ID',
               prompt='Item ID to delete:')
-def delete_item(username, password, community, server, item):
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
+def delete_item(username, password, community, server, item, realm_name):
     """
     Destroy an item on the WDP [WARNING]
     """
@@ -866,7 +878,7 @@ def delete_item(username, password, community, server, item):
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, table_log=table_log,
-                              community=community)
+                              community=community, realm_name=realm_name)
     result = wdp.destroy_item(item)
 
     if result and 'data' in result and 'destroyItem' in result['data']:
@@ -905,6 +917,9 @@ def delete_item(username, password, community, server, item):
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name to delete:')
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
 def delete_collection(username, password, community, server, collection):
     """
     Destroy a collection on the WDP [WARNING]
@@ -917,7 +932,7 @@ def delete_collection(username, password, community, server, collection):
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, table_log=table_log,
-                              community=community)
+                              community=community, realm_name=realm_name)
 
     collection_obj = wdp.get_collection(collection_name=collection)
 
@@ -965,6 +980,9 @@ def delete_collection(username, password, community, server, collection):
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name')
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
 def nuke_collection(username, password, community, collection, server):
     """
     Deletes all items in a collection [WARNING]
@@ -977,7 +995,7 @@ def nuke_collection(username, password, community, collection, server):
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, table_log=table_log,
-                              community=community)
+                              community=community, realm_name=realm_name)
     result = wdp.list_items(collection)
 
     if result and 'data' in result and 'collection' in result['data']:
@@ -1017,6 +1035,9 @@ def nuke_collection(username, password, community, collection, server):
 @click.option('--collection',
               help='The collection name',
               prompt='Collection name')
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
 def list_items(username, password, community, collection, server):
     """
     List available community collection items on the WDP
@@ -1029,7 +1050,7 @@ def list_items(username, password, community, collection, server):
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, table_log=table_log,
-                              community=community)
+                              community=community, realm_name=realm_name)
     result = wdp.list_items(collection)
 
     if result and 'data' in result and 'collection' in result['data']:
@@ -1065,7 +1086,10 @@ def list_items(username, password, community, collection, server):
 @click.option('--server',
               help='The keycloak server',
               default='https://auth.staging.nglp.org/auth/')
-def list_collections(username, password, community, server):
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
+def list_collections(username, password, community, server, realm_name):
     """
     List available community collections on the WDP
     """
@@ -1077,7 +1101,7 @@ def list_collections(username, password, community, server):
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, table_log=table_log,
-                              community=community)
+                              community=community, realm_name=realm_name)
     result = wdp.list_collections()
 
     if result and 'data' in result and 'community' in result['data']:
@@ -1114,7 +1138,11 @@ def list_collections(username, password, community, server):
 @click.option('--server',
               help='The keycloak server',
               default='https://auth.staging.nglp.org/auth/')
-def create_collection(collection, username, password, community, server):
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
+def create_collection(collection, username, password, community, server,
+                      realm_name):
     """
     Create a new collection on the WDP
     """
@@ -1126,7 +1154,7 @@ def create_collection(collection, username, password, community, server):
 
     wdp = WebDeliveryPlatform(username=username, password=password,
                               auth_endpoint=server, community=community,
-                              table_log=table_log)
+                              table_log=table_log, realm_name=realm_name)
     result = wdp.create_collection(collection)
 
     if result and 'data' in result and 'createCollection' in result['data'] \
@@ -1158,8 +1186,11 @@ def create_collection(collection, username, password, community, server):
               help='The password to login with')
 @click.option('--server',
               help='The keycloak server',
-              default='https://auth.staging.nglp.org/auth/')
-def test_authorisation(username, password, server):
+              default='https://auth.nglp.org/auth/')
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
+def test_authorisation(username, password, server, realm_name):
     """
     Test that authorisation is working on the WDP
     """
@@ -1171,7 +1202,8 @@ def test_authorisation(username, password, server):
     table_log = OrderedDict()
 
     wdp = WebDeliveryPlatform(username=username, password=password,
-                              auth_endpoint=server, table_log=table_log)
+                              auth_endpoint=server, table_log=table_log,
+                              realm_name=realm_name)
     result = wdp.check_auth()
 
     if result and 'data' in result and 'username' in result['data']['viewer']:
@@ -1206,7 +1238,11 @@ def test_authorisation(username, password, server):
               help='The email address to lookup')
 @click.option('--orcid',
               help='The ORCID to lookup')
-def get_user(username, password, server, email=None, orcid=None):
+@click.option('--realm_name',
+              help='The realm',
+              default='arizona')
+def get_user(username, password, server, email=None, orcid=None,
+             realm_name=None):
     """
     Lookup a user by email or ORCID
     """
@@ -1217,7 +1253,8 @@ def get_user(username, password, server, email=None, orcid=None):
     table_log = OrderedDict()
 
     wdp = WebDeliveryPlatform(username=username, password=password,
-                              auth_endpoint=server, table_log=table_log)
+                              auth_endpoint=server, table_log=table_log,
+                              realm_name=realm_name)
     result = wdp.get_user(email=email, orcid=orcid)
 
     if result:
