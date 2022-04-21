@@ -26,7 +26,7 @@ from config import settings
               default=os.path.join(Path.home(), '.phonehomeauth'))
 @click.option('--realm-name',
               help='The realm name',
-              default="arizona-nglp")
+              default="arizona")
 def get_keycloak_token(username, password, server, auth_file, realm_name):
     """
     Get an auth token from a keycloak server

@@ -79,8 +79,11 @@ def cli():
 @click.option('--files/--no-files',
               help='Whether to push files to the WDP or not',
               default=True)
+@click.option('--realm-name',
+              help='The realm name',
+              default="arizona")
 def import_csv(csv_filename, cache_dir, out_file, username, password,
-               community, collection, server, cache, commit, files):
+               community, collection, server, cache, commit, files, realm_name):
     """
     Import a set of URLs from a CSV file
     """
@@ -93,7 +96,8 @@ def import_csv(csv_filename, cache_dir, out_file, username, password,
 
         for row in csv_reader:
             _import_single(row['URL'], cache_dir, out_file, username, password,
-                           community, collection, server, cache, commit, files)
+                           community, collection, server, cache, commit, files,
+                           realm_name=realm_name)
 
 
 @click.command()
@@ -130,8 +134,11 @@ def import_csv(csv_filename, cache_dir, out_file, username, password,
 @click.option('--files/--no-files',
               help='Whether to push files to the WDP or not',
               default=True)
+@click.option('--realm-name',
+              help='The realm name',
+              default="arizona")
 def import_single(url, cache_dir, out_file, username, password, community,
-                  collection, server, cache, commit, files):
+                  collection, server, cache, commit, files, realm_name):
     """
     Import a single item
     """
@@ -139,11 +146,11 @@ def import_single(url, cache_dir, out_file, username, password, community,
     password = password if password else settings.password
 
     _import_single(url, cache_dir, out_file, username, password, community,
-                   collection, server, cache, commit, files)
+                   collection, server, cache, commit, files, realm_name)
 
 
 def _import_single(url, cache_dir, out_file, username, password, community,
-                   collection, server, cache, commit, files):
+                   collection, server, cache, commit, files, realm_name):
     """
     The non-Click version of the import func
     """
@@ -232,7 +239,7 @@ def _import_single(url, cache_dir, out_file, username, password, community,
 
     wdp.create_etd(username, password, community, collection,
                    server, parsed, table_log=table_log, commit=commit,
-                   cache_dir=cache_dir, files=files)
+                   cache_dir=cache_dir, files=files, realm_name=realm_name)
 
 
 def get_handler(log, handlers, xml_dict):

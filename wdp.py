@@ -646,8 +646,9 @@ class WebDeliveryPlatform:
             return None
 
 
-def create_etd(username, password, realm_name, community, collection, server, thesis=None,
-               table_log=None, commit=True, cache_dir=None, files=True):
+def create_etd(username, password, community, collection, server,
+               thesis=None, table_log=None, commit=True, cache_dir=None,
+               files=True, realm_name=None):
     """
     Create an electronic thesis/dissertation on the WDP
     """

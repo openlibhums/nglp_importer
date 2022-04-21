@@ -6,3 +6,4 @@ django
 python-keycloak
 tuspy
 dynaconf
+python-dateutil

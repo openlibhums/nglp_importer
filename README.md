@@ -31,6 +31,8 @@ To create the database, run manage.py migrate.
 
 In Keycloak, you _must_ reset the password for every user on every realm and set the value to a non-temporary password. If you get "bad credentials" when trying to login, this is likely the problem.
 
+For CSV import of URLs you must have a column titled "URL".
+
 ## Requirements notes
 This project uses:
 
