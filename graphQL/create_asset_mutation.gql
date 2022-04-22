@@ -15,6 +15,7 @@ mutation {{
 			# This is a union type on AssetAudio, AssetDocument, AssetImage, AssetPDF,
 			# AssetUnknown, and AssetVideo. Each type can have specific properties.
 			...on AssetPDF {{
+			    id
 				downloadUrl
 				fileSize
 				name

@@ -65,8 +65,10 @@ def parse_oa_status(value):
     # at https://github.com/NGLPteam/wdp-api/blob/main/lib/schemas/definitions/nglp/dissertation/1.0.0.json
     if value == 'openaccess':
         return 'open access'
+    elif 'embargo' in value:
+        return 'embargoed access'
     else:
-        return value
+        return 'open access'
 
 
 def graph_ql_loader(schema, log=None, table_log=None):

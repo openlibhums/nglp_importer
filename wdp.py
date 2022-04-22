@@ -98,6 +98,16 @@ class WebDeliveryPlatform:
         gql.inject_token(token)
         response = json.loads(gql.execute(query=query))
 
+        if response and 'data' in response and 'applySchemaProperties' in \
+                response['data'] and 'schemaErrors' \
+                in response['data']['applySchemaProperties']:
+            if len(response['data']
+                   ['applySchemaProperties']['schemaErrors']) > 0:
+                self.log.error('[red]Error encountered in remote: {}'.format(
+                        response['data']['applySchemaProperties']
+                        ['schemaErrors']))
+                self.table_log['Schema errors detected'] = False
+
         if 'errors' in response:
             self.log.error(
                 '[red]Error encountered in remote: [/]{}'.format(
@@ -277,6 +287,27 @@ class WebDeliveryPlatform:
             if self.table_log is not None:
                 self.table_log['Download file'] = False
             return None
+
+    def update_etd_file(self, etd_id, file_id):
+        # retrieve community if not already done
+        self._map_slug()
+
+        query = utils.graph_ql_loader('update_etd_file_mutation',
+                                      log=self.log,
+                                      table_log=self.table_log)
+
+        try:
+            file_id = file_id['data']['createAsset']['asset']['id']
+
+            query = query.format(etd_id, file_id)
+        except:
+            self.log.error('[red]Failed to attach file as article file:[/] '
+                           '{}'.format(file_id), extra={'markup': True})
+
+            if self.table_log is not None:
+                self.table_log['Attach file as article'] = False
+
+        return self._send_query(query=query)
 
     def update_etd(self, etd_id, thesis):
         # retrieve community if not already done
@@ -561,10 +592,11 @@ class WebDeliveryPlatform:
 
         return self._send_query(query=query)
 
-    def upload_file(self, filename):
+    def upload_file(self, filename, realm_name):
         upload_token = self.get_upload_token()
-        my_client = client.TusClient('https://api.staging.nglp.org/files/',
-                                     headers={'Upload-Token': upload_token})
+        my_client = client.TusClient(
+            'https://api.{0}.nglp.org/files/'.format(realm_name),
+            headers={'Upload-Token': upload_token})
 
         uploader = my_client.uploader(filename, log_func=self.log_it)
 
@@ -675,6 +707,7 @@ def create_etd(username, password, community, collection, server,
         result = {'id': 1337, 'title': thesis['title'], 'slug': 'sluggish'}
 
     object_id = None
+    thesis_object = None
 
     if result and 'data' in result and 'createItem' in result['data']:
         log.info('[green]Created thesis:[/] {}'.format(
@@ -687,6 +720,7 @@ def create_etd(username, password, community, collection, server,
             table_log['Create new ETD'] = True
 
         if commit:
+            thesis_object = result['data']['createItem']['item']['id']
             wdp.update_etd(result['data']['createItem']['item']['id'], thesis)
 
     elif 'title' in result and result['title'] == thesis['title']:
@@ -696,6 +730,7 @@ def create_etd(username, password, community, collection, server,
         object_id = result['id']
 
         if commit:
+            thesis_object = result['id']
             wdp.update_etd(result['id'], thesis)
     else:
         log.error(
@@ -709,13 +744,16 @@ def create_etd(username, password, community, collection, server,
 
         return
 
+    upload_result = None
+    attached_result = None
+
     if files:
         # download the file (goes to ~/down.pdf)
         filename = wdp.download_file(thesis['fulltext-url'], cache=True,
                                      cache_dir=cache_dir)
 
         if filename and commit:
-            upload_result = wdp.upload_file(filename)
+            upload_result = wdp.upload_file(filename, realm_name=realm_name)
 
             log.info('[green]TUS file upload ID:[/] {}'.format(upload_result),
                      extra={'markup': True})
@@ -724,7 +762,7 @@ def create_etd(username, password, community, collection, server,
                 table_log['Download PDF'] = True
                 table_log['TUS file upload'] = True
 
-            wdp.attach_file(object_id, upload_result[1])
+            attached_result = wdp.attach_file(object_id, upload_result[1])
         elif filename and not commit:
             log.info('[green]Skipping upload as in non-commit mode[/]',
                      extra={'markup': True})
@@ -743,6 +781,11 @@ def create_etd(username, password, community, collection, server,
                  extra={'markup': True})
         if table_log is not None:
             table_log['File upload/download (set to skipped)'] = False
+
+    # if we have a successful file upload, we need to link it to the
+    # pdf_version attribute
+    if attached_result:
+        wdp.update_etd_file(thesis_object, attached_result)
 
     has_email = True
 
