@@ -294,14 +294,13 @@ class WebDeliveryPlatform:
 
         # parse out the main file
         if main_file and 'data' in main_file:
-            print(main_file)
             main_file = main_file['data']['createAsset']['asset']['id']
         else:
             main_file = 'null'
 
         # a list of fields to extract from Bepress metadata
         field_list = ['degree_name', 'award_month', 'degree_year',
-                      r'advisor\d*', 'publication_date']
+                      r'advisor\d*', 'publication_date', 'distribution_license']
 
         # a placeholder list that will be populated with dynamic fields
         # like "advisor1"
@@ -313,7 +312,6 @@ class WebDeliveryPlatform:
         field_mappings['degree_name'] = ['degree_name', 'level']
         field_mappings['award_month'] = 'award_month'
         field_mappings['degree_year'] = ['degree_year', 'publication_date']
-
 
         # fields listed here will not be considered required variables
         # this is a way of marking field mappings as only for intermediate
@@ -490,13 +488,17 @@ class WebDeliveryPlatform:
         if 'abstract' not in thesis:
             thesis['abstract'] = ''
 
+        global_list['distribution_license'] = \
+            utils.parse_oa_license(global_list['distribution_license'])
+
         query = query.format(etd_id, thesis['abstract'],
                              global_list['degree_name'],
                              global_list['degree_year'],
                              global_list['advisor'],
                              institution,
                              global_list['oa-status'],
-                             main_file)
+                             main_file,
+                             global_list['distribution_license'])
 
         return self._send_query(query=query)
 
@@ -755,7 +757,6 @@ def create_etd(username, password, community, collection, server,
                 etd_id=result['data']['createItem']['item']['id'],
                 thesis=thesis,
                 main_file=attached_result)
-            print(res)
 
     elif 'title' in result and result['title'] == thesis['title']:
         # we are using an existing thesis rather than newly created
@@ -767,7 +768,6 @@ def create_etd(username, password, community, collection, server,
             thesis_object = result['id']
             res = wdp.update_etd(etd_id=result['id'], thesis=thesis,
                                  main_file=attached_result)
-            print(res)
     else:
         log.error(
             '[red]Unable to create new ETD[/]',

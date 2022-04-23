@@ -9,6 +9,7 @@ mutation {{
         language: "English",
         access: "{6}",
         pdf_version: "{7}",
+        cc_license: "{8}",
         degree : {{
           level: "{2}",
             grantor: "{5}"

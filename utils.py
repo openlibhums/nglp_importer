@@ -71,6 +71,24 @@ def parse_oa_status(value):
         return 'open access'
 
 
+def parse_oa_license(value):
+    value = value.lower()
+    if "by-nc-sa/" in value:
+        return "CC BY-NC-SA"
+    elif "by-nc-nd/" in value:
+        return "CC BY-NC-ND"
+    elif "by-nc/" in value:
+        return "CC BY-NC"
+    elif "by-nd/" in value:
+        return "CC BY-ND"
+    elif "by-sa/" in value:
+        return "CC BY-SA"
+    elif "by/" in value:
+        return "CC BY"
+    else:
+        return ""
+
+
 def graph_ql_loader(schema, log=None, table_log=None):
     """
     Loads a GraphQL schema from the GraphQL directory
@@ -144,10 +162,8 @@ def get_remote_text(log, url, cache, cache_dir):
         with open(Path(cache_dir) / str(c.on_disk), 'w') as cached:
             cached.write(response.text)
 
-        print(response.text)
         return response.text
     else:
-        print(response)
         return response
 
 
