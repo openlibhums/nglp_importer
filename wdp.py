@@ -288,30 +288,16 @@ class WebDeliveryPlatform:
                 self.table_log['Download file'] = False
             return None
 
-    def update_etd_file(self, etd_id, file_id):
+    def update_etd(self, etd_id, thesis, main_file=None):
         # retrieve community if not already done
         self._map_slug()
 
-        query = utils.graph_ql_loader('update_etd_file_mutation',
-                                      log=self.log,
-                                      table_log=self.table_log)
-
-        try:
-            file_id = file_id['data']['createAsset']['asset']['id']
-
-            query = query.format(etd_id, file_id)
-        except:
-            self.log.error('[red]Failed to attach file as article file:[/] '
-                           '{}'.format(file_id), extra={'markup': True})
-
-            if self.table_log is not None:
-                self.table_log['Attach file as article'] = False
-
-        return self._send_query(query=query)
-
-    def update_etd(self, etd_id, thesis):
-        # retrieve community if not already done
-        self._map_slug()
+        # parse out the main file
+        if main_file and 'data' in main_file:
+            print(main_file)
+            main_file = main_file['data']['createAsset']['asset']['id']
+        else:
+            main_file = 'null'
 
         # a list of fields to extract from Bepress metadata
         field_list = ['degree_name', 'award_month', 'degree_year',
@@ -489,7 +475,10 @@ class WebDeliveryPlatform:
                 raise KeyError('Could not find variable {}'.format(variable))
 
         # finally, some manual extraction
-        if 'authors' in thesis and 'institution' in thesis['authors']['author']:
+        if 'institution' in thesis:
+            institution = thesis['institution']
+        elif 'authors' in thesis and 'institution' in \
+                thesis['authors']['author']:
             institution = thesis['authors']['author']['institution']
         else:
             institution = 'null'
@@ -506,7 +495,8 @@ class WebDeliveryPlatform:
                              global_list['degree_year'],
                              global_list['advisor'],
                              institution,
-                             global_list['oa-status'])
+                             global_list['oa-status'],
+                             main_file)
 
         return self._send_query(query=query)
 
@@ -706,46 +696,13 @@ def create_etd(username, password, community, collection, server,
     else:
         result = {'id': 1337, 'title': thesis['title'], 'slug': 'sluggish'}
 
+    attached_result = None
     object_id = None
     thesis_object = None
 
+    # set the object ID
     if result and 'data' in result and 'createItem' in result['data']:
-        log.info('[green]Created thesis:[/] {}'.format(
-            result['data']['createItem']['item']['slug']),
-            extra={'markup': True})
-
         object_id = result['data']['createItem']['item']['id']
-
-        if table_log is not None:
-            table_log['Create new ETD'] = True
-
-        if commit:
-            thesis_object = result['data']['createItem']['item']['id']
-            wdp.update_etd(result['data']['createItem']['item']['id'], thesis)
-
-    elif 'title' in result and result['title'] == thesis['title']:
-        # we are using an existing thesis rather than newly created
-        table_log['Locate existing ETD'] = True
-
-        object_id = result['id']
-
-        if commit:
-            thesis_object = result['id']
-            wdp.update_etd(result['id'], thesis)
-    else:
-        log.error(
-            '[red]Unable to create new ETD[/]',
-            extra={'markup': True})
-
-        if table_log is not None:
-            table_log['Create new ETD'] = False
-
-        output_table_log(table_log)
-
-        return
-
-    upload_result = None
-    attached_result = None
 
     if files:
         # download the file (goes to ~/down.pdf)
@@ -782,10 +739,49 @@ def create_etd(username, password, community, collection, server,
         if table_log is not None:
             table_log['File upload/download (set to skipped)'] = False
 
-    # if we have a successful file upload, we need to link it to the
-    # pdf_version attribute
-    if attached_result:
-        wdp.update_etd_file(thesis_object, attached_result)
+    if result and 'data' in result and 'createItem' in result['data']:
+        log.info('[green]Created thesis:[/] {}'.format(
+            result['data']['createItem']['item']['slug']),
+            extra={'markup': True})
+
+        object_id = result['data']['createItem']['item']['id']
+
+        if table_log is not None:
+            table_log['Create new ETD'] = True
+
+        if commit:
+            thesis_object = result['data']['createItem']['item']['id']
+            res = wdp.update_etd(
+                etd_id=result['data']['createItem']['item']['id'],
+                thesis=thesis,
+                main_file=attached_result)
+            print(res)
+
+    elif 'title' in result and result['title'] == thesis['title']:
+        # we are using an existing thesis rather than newly created
+        table_log['Locate existing ETD'] = True
+
+        object_id = result['id']
+
+        if commit:
+            thesis_object = result['id']
+            res = wdp.update_etd(etd_id=result['id'], thesis=thesis,
+                                 main_file=attached_result)
+            print(res)
+    else:
+        log.error(
+            '[red]Unable to create new ETD[/]',
+            extra={'markup': True})
+
+        if table_log is not None:
+            table_log['Create new ETD'] = False
+
+        output_table_log(table_log)
+
+        return
+
+    upload_result = None
+    attached_result = None
 
     has_email = True
 

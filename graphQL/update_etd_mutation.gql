@@ -8,6 +8,7 @@ mutation {{
         graduation_date: "{3}",
         language: "English",
         access: "{6}",
+        pdf_version: "{7}",
         degree : {{
           level: "{2}",
             grantor: "{5}"

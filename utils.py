@@ -127,6 +127,9 @@ def _get_response(log, url, cache, cache_dir, stream=False):
 
     response = requests.get(url, stream=stream)
 
+    # force UTF-8
+    response.encoding = 'utf-8'
+
     if not response.status_code == 200:
         raise requests.RequestException
 
@@ -141,8 +144,10 @@ def get_remote_text(log, url, cache, cache_dir):
         with open(Path(cache_dir) / str(c.on_disk), 'w') as cached:
             cached.write(response.text)
 
+        print(response.text)
         return response.text
     else:
+        print(response)
         return response
 
 
