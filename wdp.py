@@ -488,6 +488,12 @@ class WebDeliveryPlatform:
         if 'abstract' not in thesis:
             thesis['abstract'] = ''
 
+        if '\\' in thesis['abstract']:
+            thesis['abstract'] = thesis['abstract'].replace('\\', '\\\\')
+
+        if 'distribution_license' not in global_list:
+            global_list['distribution_license'] = ''
+
         global_list['distribution_license'] = \
             utils.parse_oa_license(global_list['distribution_license'])
 
