@@ -22,7 +22,7 @@ A command-line system for importing BePress artifacts into the [NGLP](https://gi
 
 Items marked [WARNING] are destructive. The client will not ask for confirmation before destructive operations.
 
-## Configuration and Setup
+## Configuration, Setup, and Notes
 Requirements should be installed using pip3 -r requirements.txt
 
 Defaults in secrets.toml.default should be updated and then renamed to .secrets.toml.
@@ -31,7 +31,9 @@ To create the database, run manage.py migrate.
 
 In Keycloak, you _must_ reset the password for every user on every realm and set the value to a non-temporary password. If you get "bad credentials" when trying to login, this is likely the problem.
 
-For CSV import of URLs you must have a column titled "URL".
+Uploads to WDP are handled by TUS. However, a notable limit on TUS when using the AWS S3 backend is that chunk sizes cannot be smaller than 5MB. This client uses 20MB chunks.
+
+For CSV import of URLs you must have a column in the file titled "URL".
 
 ## Requirements notes
 This project uses:

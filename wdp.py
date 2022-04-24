@@ -598,6 +598,11 @@ class WebDeliveryPlatform:
 
         uploader = my_client.uploader(filename, log_func=self.log_it)
 
+        # we need to set an uploadable chunk size
+        # there is a bug in TUS, though, where anything lower than 5MB
+        # does not get stored! Seriously.
+        uploader.chunk_size = 20000000
+
         uploader.upload()
 
         # this returns a URL of the format
