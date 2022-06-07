@@ -114,6 +114,8 @@ class WebDeliveryPlatform:
                     response['errors'][0]['message']),
                 extra={'markup': True})
 
+            self.log.error(response)
+
             if 'You are not authorized' in response['errors'][0]['message']:
                 if self.table_log is not None:
                     self.table_log['Account does not have permission'] = False
@@ -293,7 +295,12 @@ class WebDeliveryPlatform:
         self._map_slug()
 
         # parse out the main file
-        if main_file and 'data' in main_file:
+        if main_file and 'data' in main_file and main_file['data'] \
+                and 'createAsset' in \
+                main_file['data'] and main_file['data']['createAsset'] \
+                and 'asset' \
+                in main_file['data']['createAsset'] and 'id' \
+                in main_file['data']['createAsset']['asset']:
             main_file = main_file['data']['createAsset']['asset']['id']
         else:
             main_file = 'null'
@@ -516,6 +523,8 @@ class WebDeliveryPlatform:
 
         query = utils.graph_ql_loader(schema='create_asset_mutation',
                                       log=self.log, table_log=self.table_log)
+        self.log.info('Asset mutation using object {} for upload {}'.format(
+            object_id, upload_id))
         query = query.format(object_id, upload_id)
 
         return self._send_query(query=query)
@@ -577,8 +586,14 @@ class WebDeliveryPlatform:
                                               log=self.log,
                                               table_log=self.table_log)
 
-                query = query.format(author['fname'], author['lname'],
-                                     institution)
+                if isinstance(author, dict):
+                    query = query.format(author['fname'], author['lname'],
+                                         institution)
+                else:
+                    # TODO: need to handle multiple authors
+                    author = author[0]
+                    query = query.format(author['fname'], author['lname'],
+                                         institution)
         else:
             query = utils.graph_ql_loader('update_contributor_mutation',
                                           log=self.log,
@@ -714,8 +729,11 @@ def create_etd(username, password, community, collection, server,
     thesis_object = None
 
     # set the object ID
+    log.info(result)
     if result and 'data' in result and 'createItem' in result['data']:
         object_id = result['data']['createItem']['item']['id']
+    elif result and 'id' in result:
+        object_id = result['id']
 
     if files:
         # download the file (goes to ~/down.pdf)

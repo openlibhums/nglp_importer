@@ -36,7 +36,9 @@ class ETD(models.Model):
     @staticmethod
     def handle_spec(log, specification):
         handle_type = ['publication:etd', 'publication:etds',
-                       'publication:cgu_etd']
+                       'publication:cgu_etd', 'publication:pitzer',
+                       'publication:pitzer_theses',
+                       'publication:pitzer_student']
         if specification in handle_type:
             log.info('[green]ETD handler:[/] selected',
                      extra={'markup': True})
