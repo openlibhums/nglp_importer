@@ -477,7 +477,11 @@ class WebDeliveryPlatform:
         # check we have all the fields we require
         for variable in required_variables:
             if variable not in global_list:
-                raise KeyError('Could not find variable {}'.format(variable))
+                self.log.error('Could not find variable {}'.format(variable))
+                if variable == 'degree_name':
+                    global_list['degree_name'] = 'No degree name'
+                else:
+                    raise KeyError('Could not find variable {}'.format(variable))
 
         # finally, some manual extraction
         if 'institution' in thesis:
